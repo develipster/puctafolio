@@ -1,0 +1,211 @@
+---
+title: "Building an Interactive Knowledge Graph with D3.js"
+publishedAt: "2025-09-02"
+summary: "Implementing a dynamic SVG-based node graph to visualize my university coursework and technical skills using D3.js force simulation."
+---
+
+After establishing the foundation of my portfolio with the Vercel template, it was time to tackle the centerpiece feature: an interactive knowledge graph that would visually represent my academic journey and technical expertise. Today's development session focused on choosing the right technology and implementing the core graph functionality.
+
+## Technology Decision: D3.js vs React Flow vs Cytoscape.js
+
+The first challenge was selecting the appropriate library for creating the interactive graph. I evaluated three main options:
+
+### React Flow
+
+- **Pros**: Excellent React integration, built-in physics, clean API
+- **Cons**: Less customization flexibility, newer ecosystem
+- **Best for**: Rapid development with good defaults
+
+### Cytoscape.js
+
+- **Pros**: Specialized for graph visualization, multiple layout algorithms
+- **Cons**: Separate ecosystem from React, steeper learning curve
+- **Best for**: Complex graph relationships with advanced layouts
+
+### D3.js
+
+- **Pros**: Maximum customization, powerful force simulation, extensive community
+- **Cons**: Steeper learning curve, more code required
+- **Best for**: Custom visualizations with full control
+
+**Decision: D3.js**
+
+I chose D3.js for several compelling reasons:
+
+- **Flexibility**: Complete control over visual design and interactions
+- **Force simulation**: Built-in physics engine perfect for node positioning
+- **Learning opportunity**: Deepening my data visualization skills
+- **Customization**: Ability to create exactly the aesthetic I envisioned
+
+## Implementation Architecture
+
+The implementation involved creating a clean separation of concerns:
+
+```
+app/graph/
+├── graph.tsx          # Main D3 graph component
+├── knowledge.tsx      # Data structure and types
+└── knowledge.json     # Course and connection data
+```
+
+### Core Component Structure
+
+The main `KnowledgeGraph` component follows a client-side rendering pattern:
+
+```typescript
+"use client";
+
+interface Node {
+  id: number;
+  label: string;
+  x?: number;
+  y?: number;
+  fx?: number | null;
+  fy?: number | null;
+}
+
+interface Edge {
+  from: number;
+  to: number;
+}
+```
+
+## D3.js Modules and Their Roles
+
+The implementation leverages several key D3 modules, each serving a specific purpose:
+
+### d3-force: Physics Simulation Engine
+
+```typescript
+const simulation = d3
+  .forceSimulation(nodes)
+  .force("link", d3.forceLink(links).distance(100))
+  .force("charge", d3.forceManyBody().strength(-300))
+  .force("center", d3.forceCenter(width / 2, height / 2))
+  .force("collision", d3.forceCollide().radius(30));
+```
+
+- **forceLink**: Maintains connections between related courses
+- **forceManyBody**: Creates repulsion between nodes for spacing
+- **forceCenter**: Keeps the graph centered in the viewport
+- **forceCollide**: Prevents node overlap with collision detection
+
+### d3-selection: DOM Manipulation
+
+```typescript
+const svg = d3.select(svgRef.current);
+const node = container.selectAll("g").data(nodes);
+```
+
+Handles all SVG element creation and data binding, replacing traditional React DOM manipulation for the graph elements.
+
+### d3-zoom: Interactive Navigation
+
+```typescript
+const zoom = d3
+  .zoom()
+  .scaleExtent([0.1, 4])
+  .on("zoom", (event) => {
+    container.attr("transform", event.transform);
+  });
+```
+
+Enables pan and zoom functionality, allowing users to explore large graphs and focus on specific areas.
+
+### d3-drag: Node Interaction
+
+```typescript
+function dragstarted(event, d) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+```
+
+Implements the drag behavior that lets users manually position nodes while maintaining physics simulation.
+
+## Data Structure Design
+
+The knowledge graph uses a simple but effective data model:
+
+```json
+{
+  "title": "Knowledge Graph",
+  "nodes": [
+    { "id": 1, "label": "Computer Engineering" },
+    { "id": 2, "label": "Software Engineering" },
+    { "id": 3, "label": "Database Systems" }
+  ],
+  "edges": [
+    { "from": 1, "to": 2 },
+    { "from": 1, "to": 3 }
+  ]
+}
+```
+
+The central "Computer Engineering" node serves as the hub, with specialized courses connected to it, creating a radial knowledge map.
+
+## Integration Challenges and Solutions
+
+### Server-Side Rendering Issues
+
+Initially encountered problems with D3 trying to execute on the server side. Solved by:
+
+- Using `'use client'` directive for the graph component
+- Proper data loading patterns with useEffect
+- Converting JSON imports to TypeScript modules
+
+### Force Simulation Tuning
+
+Finding the right balance of forces required experimentation:
+
+- **Charge strength**: Too strong creates chaos, too weak causes clustering
+- **Link distance**: Affects the spacing between connected nodes
+- **Collision radius**: Prevents overlap while maintaining readability
+
+## Visual Design Decisions
+
+The graph employs a clean, professional aesthetic:
+
+- **Central node**: Larger size (#ff6b6b color) to emphasize importance
+- **Course nodes**: Smaller, consistent sizing (#4ecdc4 color)
+- **Connections**: Subtle gray lines indicating relationships
+- **Typography**: Clean sans-serif labels for readability
+
+## Current Status and Next Steps
+
+The core graph functionality is now operational with:
+
+- ✅ Physics-based node positioning
+- ✅ Drag and drop interactions
+- ✅ Zoom and pan navigation
+- ✅ Responsive design
+- ✅ Clean visual hierarchy
+
+However, several improvements are still needed:
+
+**Data Enhancement**: The current dataset is simplified for testing. The next phase will involve:
+
+- Detailed course information from my actual curriculum
+- More sophisticated node categorization (core courses, electives, projects)
+- Additional metadata for each course (credits, semester, difficulty)
+
+**Visual Polish**: While functional, the graph needs aesthetic refinement:
+
+- Better color schemes and node styling
+- Improved label positioning and readability
+- Animation transitions for smoother interactions
+- Mobile responsiveness optimization
+
+**Feature Expansion**: Future enhancements will include:
+
+- Click-to-navigate functionality to individual course pages
+- Filtering and search capabilities
+- Different view modes (chronological, by subject area)
+- Integration with project and skills data
+
+The foundation is solid, and the core technology decisions have proven sound. The D3.js implementation provides the flexibility needed for future enhancements while maintaining excellent performance and user experience.
+
+---
+
+_This development session established the technical foundation for the knowledge graph feature. The next post will cover the data modeling process and the detailed course mapping that will make this visualization truly representative of my academic journey._

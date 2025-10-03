@@ -1,0 +1,31 @@
+export const knowledgeData = {
+  "title": "Knowledge Graph",
+  "description": "A graph representation of knowledge domains and their interconnections.",
+  "nodes": [
+    {"id": 1, "label": "Computer Engineering Degree"},
+    {"id": 2, "label": "Software Development"},
+    {"id": 3, "label": "Web Development"},
+    {"id": 4, "label": "Frontend Development"},
+    {"id": 5, "label": "Backend Development"},
+    {"id": 6, "label": "Full Stack Development"},
+    {"id": 7, "label": "Databases"},
+    {"id": 8, "label": "SQL"},
+    {"id": 9, "label": "NoSQL"},
+    {"id": 10, "label": "Cloud Computing"},
+    {"id": 11, "label": "DevOps"},
+    {"id": 12, "label": "Machine Learning"},
+    {"id": 13, "label": "Artificial Intelligence"}
+  ],
+  "edges": [{"from": 1, "to": 2},
+    {"from": 1, "to": 3},
+    {"from": 1, "to": 4},
+    {"from": 1, "to": 5},
+    {"from": 1, "to": 6},
+    {"from": 1, "to": 7},
+    {"from": 1, "to": 8},
+    {"from": 1, "to": 9},
+    {"from": 1, "to": 10},
+    {"from": 1, "to": 11},
+    {"from": 1, "to": 12},
+    {"from": 1, "to": 13}]
+}
