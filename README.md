@@ -152,6 +152,8 @@ This is a personal portfolio project, but suggestions and feedback are welcome! 
 
 This project is open source and available under the [MIT License](LICENSE).
 
+**Note**: This project was initially based on the [Vercel Portfolio Template](https://github.com/vercel/examples/tree/main/solutions/portfolio) (MIT Licensed) and has been extensively modified and customized.
+
 ## 📧 Contact
 
 **Felipe Olivares** - Computer Engineering Graduate
