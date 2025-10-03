@@ -17,7 +17,7 @@ export default function Page() {
         and optimize user experiences.`}
       </p>
       <div className="my-4">
-        <KnowledgeGraph data={knowledgeData} width={800} height={400} />
+        <KnowledgeGraph data={knowledgeData} width={700} height={400} />
       </div>
       <div className="my-8">
         <BlogPosts />
