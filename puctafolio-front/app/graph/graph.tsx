@@ -90,7 +90,17 @@ export default function KnowledgeGraph({
 
     // Add circles to nodes
     node.append("circle")
-      .attr("r", (d: any) => d.id === 1 ? 20: 15) // Larger circle for central node
+      .attr("r", (d: any) => {
+        if (d.size === "xl") return 35;
+        else if (d.size === "l") return 25;
+        else if (d.size === "ml") return 20;
+        else if (d.size === "m") return 15;
+        else if (d.size === "ms") return 12;
+        else if (d.size === "s") return 8;
+        else if (d.size === "xs") return 4;
+        return 5; // Default radius
+
+      }) // Larger circle for central node
       .attr("fill", (d: any) => d.id === 1 ? "#ff5722" : "#2196f3") // Different color for central node
       .attr("stroke", "#333")
       .attr("stroke-width", 1.5);
