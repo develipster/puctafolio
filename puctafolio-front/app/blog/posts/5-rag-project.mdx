@@ -1,0 +1,156 @@
+---
+title: "Course Structure Planning: From Blog System to Academic Portfolio"
+publishedAt: "2025-10-05"
+summary: "Analyzing the blog architecture to design a comprehensive course documentation system, starting with Advanced Topics in AI and the upcoming RAG project implementation."
+---
+
+Day 5 marked a strategic shift from pure development to architectural planning. Rather than diving straight into coding the RAG system for my DIIO preparation, I took time to understand how to properly document and showcase my academic work through a structured course system that mirrors the successful blog implementation.
+
+## Deconstructing the Blog Architecture
+
+The existing blog system provides an excellent foundation for academic content organization. After studying the structure, I identified the key components that make it work:
+
+### **File Organization Pattern**
+```
+app/blog/
+├── page.tsx           # Index page listing all posts
+├── utils.ts           # Content reading and parsing utilities
+├── [slug]/            # Dynamic routing for individual posts
+│   └── page.tsx       # Post rendering with metadata
+└── posts/             # MDX content files with frontmatter
+```
+
+This clean separation of concerns between routing, content management, and presentation creates a scalable system that can be replicated for course documentation.
+
+### **Content Management Strategy**
+
+The blog system's strength lies in its **frontmatter-driven metadata** approach:
+
+```markdown
+---
+title: "Post Title"
+publishedAt: "2025-10-07"
+summary: "Brief description"
+---
+```
+
+This pattern allows for rich metadata without complex database requirements, making it perfect for academic content that needs additional context like course codes, credits, and technology stacks.
+
+## Designing the Course Architecture
+
+Based on this analysis, I began planning a parallel course system that would showcase my academic journey with the same elegance as the blog system.
+
+### **Enhanced Metadata Structure**
+
+For courses, the frontmatter needs to capture academic-specific information:
+
+```markdown
+---
+title: 'Advanced Topics in Artificial Intelligence'
+code: 'IIC3692'
+semester: 'Fall 2023'
+credits: 10
+summary: 'Deep dive into cutting-edge AI research including RAG systems, LLMs, and practical implementations.'
+category: 'Data Science and AI'
+relevance: 'xl'
+technologies: ['Python', 'PyTorch', 'LangChain', 'OpenAI API']
+prerequisites: ['IIC2613 - Artificial Intelligence']
+---
+```
+
+This structure captures both academic context (codes, credits, prerequisites) and professional relevance (technologies, project outcomes).
+
+### **Hierarchical Organization**
+
+Unlike blog posts which are chronologically ordered, courses need categorical organization reflecting the knowledge graph structure:
+
+- **Basic Engineering** - Foundational mathematics and physics
+- **Introductory Computer Engineering** - Programming fundamentals
+- **Core Computer Engineering** - Essential CS concepts
+- **Theoretical Computer Science** - Mathematical foundations
+- **Data Science and AI** - Specialization area
+- **Software Engineering and Development** - Practical skills
+- **Information Technology and Management** - Business context
+
+## Advanced Topics in AI: The Perfect Starting Point
+
+**IIC3692 - Advanced Topics in Artificial Intelligence** represents an ideal course to begin with for several reasons:
+
+### **Current Relevance**
+This course directly connects to the DIIO opportunity and RAG system development, making it immediately applicable to my career goals.
+
+### **Rich Project Portfolio**
+The course involved multiple substantial projects:
+- **RAG System Implementation** - Directly relevant to DIIO's needs
+- **LLM Fine-tuning Experiments** - Understanding model customization
+- **Multimodal AI Applications** - Exploring beyond text processing
+- **Research Paper Analysis** - Critical evaluation of cutting-edge techniques
+
+### **Technology Stack Showcase**
+The course provided hands-on experience with industry-standard tools:
+- **LangChain** for RAG pipeline development
+- **Vector Databases** (Pinecone, FAISS) for similarity search
+- **OpenAI APIs** for LLM integration
+- **PyTorch** for custom model development
+- **Streamlit** for rapid prototyping and demos
+
+## Strategic Documentation Approach
+
+Rather than rushing into RAG implementation, today's planning session revealed the importance of systematic documentation:
+
+### **Project Context Setting**
+Each course page will provide:
+- **Learning objectives** and how they were achieved
+- **Project outcomes** with technical details and business value
+- **Technology decisions** and their rationale
+- **Challenges encountered** and solutions developed
+
+### **Professional Narrative**
+The course documentation will demonstrate:
+- **Progression from theory to practice** - How academic concepts translate to real applications
+- **Problem-solving methodology** - Approach to complex technical challenges
+- **Continuous learning** - Adaptation to emerging technologies and frameworks
+
+### **Portfolio Integration**
+Course pages will link back to:
+- **Knowledge graph visualization** - Showing course relationships
+- **Blog development journey** - Technical implementation stories
+- **GitHub repositories** - Code demonstrations and project outcomes
+
+## RAG Project Planning
+
+Tomorrow's RAG implementation will be documented as part of the Advanced Topics in AI course page, demonstrating:
+
+### **Academic Foundation**
+- Understanding of attention mechanisms and transformer architectures
+- Knowledge of information retrieval and similarity search algorithms
+- Experience with prompt engineering and LLM optimization
+
+### **Practical Implementation**
+- End-to-end RAG pipeline development
+- Vector database integration and management
+- API design for scalable retrieval systems
+
+### **Business Application**
+- Connection to DIIO's sales automation needs
+- Understanding of enterprise AI system requirements
+- Consideration of performance, accuracy, and cost trade-offs
+
+## Lessons in Content Architecture
+
+Today's analysis reinforced several important principles:
+
+### **Consistency Enables Scale**
+The blog system's success comes from consistent patterns that make adding new content straightforward. Replicating this for courses ensures maintainable growth.
+
+### **Metadata Drives Discovery**
+Rich frontmatter enables powerful filtering, sorting, and relationship mapping - essential for academic content that needs multiple organizational schemes.
+
+### **Integration Amplifies Value**
+Course documentation gains value when integrated with the knowledge graph, blog narrative, and overall portfolio story rather than existing in isolation.
+
+The foundation is now set for comprehensive course documentation that will transform my academic transcript into a compelling professional narrative. Starting with Advanced Topics in AI tomorrow will establish the pattern for documenting my entire Computer Engineering journey.
+
+---
+
+*Next: Implementing the RAG system for Advanced Topics in AI while establishing the course documentation framework.*

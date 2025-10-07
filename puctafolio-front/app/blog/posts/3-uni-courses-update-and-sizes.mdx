@@ -1,0 +1,197 @@
+---
+title: "From University Records to Interactive Visualization: Mapping My Academic Journey"
+publishedAt: "2025-10-03"
+summary: "Extracting and categorizing 5 years of coursework from UC's SIDING platform to create a comprehensive knowledge graph with weighted relevance for my engineering career."
+---
+
+With the D3.js foundation in place, it was time to populate the knowledge graph with real data. This meant diving deep into my academic records and transforming a raw list of courses into a meaningful visualization that accurately represents my Computer Engineering journey at Pontificia Universidad Católica de Chile.
+
+## Extracting Data from SIDING
+
+The first challenge was gathering comprehensive course data from UC's academic platform, **SIDING** (Sistema de Información para la Docencia de Ingeniería). This platform serves as the central hub for all academic information, including the **Curricular Tracker** - a tool that maps every student's progress through their degree requirements.
+
+### The SIDING Experience
+
+SIDING's Curricular Tracker provided me with:
+- **Complete course history**: Every course taken from 2019 to 2024
+- **Course codes and official names**: Essential for accurate representation
+- **Credit information**: Indicating the relative importance of each course
+- **Prerequisite relationships**: Understanding the academic flow
+- **Grade records**: Personal performance context
+
+However, the raw data was just a long list of completed courses with codes like "IIC2133" and "MAT1610" - not immediately meaningful for visualization purposes.
+
+## Academic Categorization Process
+
+The next step involved organizing 80+ courses into logical macro-topics that would make sense both academically and professionally. This required understanding how different courses contribute to my overall engineering education.
+
+### Defining Macro-Topics
+
+I identified seven key areas that encompass the Computer Engineering curriculum:
+
+#### 1. **Basic Engineering** (17 courses)
+The foundational mathematics, physics, and general engineering courses that every engineer needs:
+- Mathematics sequence: Calculus I-III, Linear Algebra, Differential Equations
+- Physics fundamentals: Dynamics, Thermodynamics, Electricity & Magnetism
+- General engineering: Chemistry, Biology, Economics, Ethics
+
+#### 2. **Introductory Computer Engineering** (4 courses)
+The gateway courses that introduce students to computational thinking:
+- Introduction to Programming (IIC1103)
+- Discrete Mathematics (IIC1253)
+- Advanced Programming (IIC2233)
+- Science and Technology in Digital Age (IIC1005)
+
+#### 3. **Core Computer Engineering** (5 courses)
+Essential computer science fundamentals that every software engineer must master:
+- Data Structures and Algorithms (IIC2133)
+- Computer Architecture (IIC2343)
+- Operating Systems and Networks (IIC2333)
+- Databases/SQL (IIC2413)
+- Distributed Systems (IIC2523)
+
+#### 4. **Theoretical Computer Science** (5 courses)
+The mathematical and theoretical foundations of computing:
+- Algorithm Analysis and Design (IIC2283)
+- Theory of Automata and Formal Languages (IIC2223)
+- Logics for Computer Science (IIC2213)
+- Cryptography and Computer Security (IIC3243)
+- High Performance Computing (IIC3533)
+
+#### 5. **Data Science and AI** (8 courses)
+My specialization area, focusing on machine learning and data analysis:
+- Artificial Intelligence (IIC2613)
+- Data Mining (IIC2433)
+- Process Mining (IIC3757)
+- Recommender Systems (IIC3633)
+- Statistical Inference (EYP2114)
+- Information Visualization (IIC2026)
+- Data Science for Health (IIC3800)
+- Advanced Topics in AI (IIC3692)
+
+#### 6. **Software Engineering and Development** (5 courses)
+Practical software development and engineering practices:
+- Software Engineering (IIC2143)
+- Web Applications (IIC2513)
+- Software Architecture (IIC2173)
+- Software Development (IIC3143)
+- Specialty Project/Capstone (IIC2154)
+
+#### 7. **Information Technology and Management** (2 courses)
+Business and management aspects of technology:
+- Information Systems (IIC2713)
+- IT Project Management (IIC3113)
+
+## Professional Relevance Weighting
+
+The most critical step was assigning weights to each course based on their relevance to my career goals as a **Data Scientist** and **Full-Stack Developer**. This involved honest self-reflection about which courses truly impact my daily work and future aspirations.
+
+### Weighting Criteria
+
+I developed a relevance scale considering:
+- **Direct applicability** to current projects and job requirements
+- **Frequency of use** in real-world software development
+- **Foundation strength** for advanced topics
+- **Industry demand** and market relevance
+- **Personal interest** and specialization goals
+
+### Weight Categories
+
+The courses were assigned relative sizes that translate to visual prominence in the graph:
+
+**Extra Large (xl)**: Core competencies I use daily
+- Data Structures and Algorithms
+- Databases/SQL
+- Web Applications
+- Software Engineering
+
+**Large (l)**: Essential skills for my career path
+- Artificial Intelligence
+- Data Mining
+- Advanced Programming
+- Software Architecture
+
+**Medium-Large (ml)**: Important foundational knowledge
+- Computer Architecture
+- Operating Systems
+- Distributed Systems
+
+**Medium (m)**: Solid background knowledge
+- Discrete Mathematics
+- Process Mining
+- Software Development
+
+**Small (s-xs)**: Specialized or less directly applicable
+- Basic engineering courses
+- Theoretical computer science topics
+- General education requirements
+
+## Implementation Challenges
+
+### Balancing Academic vs. Professional Perspective
+
+One of the trickiest aspects was balancing academic importance with professional relevance. For example:
+- **Calculus III** is academically fundamental but rarely used in web development
+- **Process Mining** is highly specialized but directly relevant to my research interests
+- **Ethics** is crucial for professional development but doesn't involve technical skills
+
+### Avoiding Bias
+
+I had to be careful not to undervalue courses simply because I found them challenging or less interesting at the time. Some courses that seemed theoretical during study (like **Cryptography**) proved valuable in understanding modern security practices.
+
+### Maintaining Academic Integrity
+
+The visualization needed to accurately represent the comprehensive nature of engineering education, not just highlight my preferred subjects. This meant ensuring adequate representation of all seven macro-topics.
+
+## Technical Implementation
+
+The weighted course data was structured as a hierarchical graph:
+
+```typescript
+interface Node {
+  id: number;
+  label: string;
+  size?: "xl" | "l" | "ml" | "m" | "ms" | "s" | "xs";
+}
+```
+
+This allows the D3.js visualization to render nodes with different sizes based on professional relevance:
+
+```typescript
+.attr("r", (d: any) => {
+  if (d.size === "xl") return 35;
+  else if (d.size === "l") return 25;
+  else if (d.size === "ml") return 20;
+  // ... and so on
+})
+```
+
+## Results and Insights
+
+The final knowledge graph now contains:
+- **82 total courses** across 5 years of study
+- **7 macro-topics** representing different engineering domains
+- **Weighted visualization** highlighting career-relevant skills
+- **Hierarchical structure** showing academic progression
+
+### Unexpected Discoveries
+
+The categorization process revealed interesting patterns:
+- **Data Science courses** represent only 10% of total coursework but 40% of career relevance
+- **Basic Engineering** courses, while foundational, have limited direct application
+- **Software Engineering** practices bridge theoretical knowledge and practical skills
+- **Interdisciplinary courses** often prove more valuable than initially expected
+
+## Future Enhancements
+
+This comprehensive course mapping enables several planned features:
+- **Interactive course details** with descriptions and projects
+- **Skill clustering** to show related competencies
+- **Timeline visualization** showing academic progression
+- **Career path mapping** connecting courses to job requirements
+
+The transformation from raw SIDING data to weighted knowledge graph demonstrates how academic records can become powerful tools for professional self-reflection and career communication.
+
+---
+
+*Next up: Implementing interactive features and detailed course information to make the knowledge graph truly explorable.*
