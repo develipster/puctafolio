@@ -1,7 +1,7 @@
 'use client'
 
 import * as d3 from "d3"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 interface Node {
   id: number;
@@ -26,26 +26,44 @@ interface GraphData {
 }
 
 export default function KnowledgeGraph({
-  data, // knowledge.json
-  width = 650,
+  data,
+  width,
   height = 400,
-
 }: {
   data: GraphData,
   width?: number,
   height?: number
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [dimensions, setDimensions] = useState({ width: width || 800, height });
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: width || containerRef.current.offsetWidth,
+          height
+        });
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, [width, height]);
+
   useEffect(() => {
     if (!data || !svgRef.current) return;
 
     // Clear previous svg content
     d3.select(svgRef.current).selectAll("*").remove();
-    
+
     // Create copies of nodes and edges to avoid mutating props
     const nodes = data.nodes.map(d => ({ ...d }));
-    const links = data.edges.map(d => ({ 
+    const links = data.edges.map(d => ({
       source: d.from,
       target: d.to
     }));
@@ -63,12 +81,23 @@ export default function KnowledgeGraph({
 
     svg.call(zoom as any);
 
-    // Initialize force simulation
+      // Initialize force simulation
     const simulation = d3.forceSimulation(nodes as d3.SimulationNodeDatum[])
       .force("link", d3.forceLink(links).id((d: any) => d.id).distance(100))
       .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collision", d3.forceCollide().radius(30));
+      .force("center", d3.forceCenter(dimensions.width / 2, dimensions.height / 2))
+      .force("collision", d3.forceCollide().radius((d: any) => {
+        if (d.size === "xl") return 45;
+        else if (d.size === "l") return 35;
+        else if (d.size === "ml") return 30;
+        else if (d.size === "m") return 25;
+        else if (d.size === "ms") return 22;
+        else if (d.size === "s") return 18;
+        else if (d.size === "xs") return 14;
+        return 15;
+      }))
+      .force("x", d3.forceX(dimensions.width / 2).strength(0.02))
+      .force("y", d3.forceY(dimensions.height / 2).strength(0.02));
 
     // Draw links
     const link = container.append("g")
@@ -91,27 +120,68 @@ export default function KnowledgeGraph({
     // Add circles to nodes
     node.append("circle")
       .attr("r", (d: any) => {
-        if (d.size === "xl") return 35;
-        else if (d.size === "l") return 25;
-        else if (d.size === "ml") return 20;
-        else if (d.size === "m") return 15;
-        else if (d.size === "ms") return 12;
-        else if (d.size === "s") return 8;
-        else if (d.size === "xs") return 4;
-        return 5; // Default radius
-
-      }) // Larger circle for central node
-      .attr("fill", (d: any) => d.id === 1 ? "#ff5722" : "#2196f3") // Different color for central node
+        if (d.size === "xl") return 45;
+        else if (d.size === "l") return 35;
+        else if (d.size === "ml") return 30;
+        else if (d.size === "m") return 25;
+        else if (d.size === "ms") return 22;
+        else if (d.size === "s") return 18;
+        else if (d.size === "xs") return 14;
+        return 15; // Default radius
+      })
+      .attr("fill", (d: any) => {
+        if (d.type === "central") return "#ff5722"; // Orange for central node
+        else if (d.type === "macro") return "#ff9800"; // Orange for macro topics
+        else if (d.type === "course") return "#f5deb3"; // Beige for courses
+        return "#2196f3"; // Default blue
+      })
       .attr("stroke", "#333")
       .attr("stroke-width", 1.5);
+
+    // Add text background rectangles
+    node.append("rect")
+      .attr("rx", 4) // Rounded corners
+      .attr("ry", 4)
+      .attr("fill", (d: any) => {
+        if (d.type === "central") return "#ff8a65"; // Lighter orange for central
+        else if (d.type === "macro") return "#ffb74d"; // Lighter orange for macro
+        else if (d.type === "course") return "#faebd7"; // Lighter beige for courses
+        return "#64b5f6"; // Default lighter blue
+      })
+      .attr("stroke", (d: any) => {
+        if (d.type === "central") return "#ff5722";
+        else if (d.type === "macro") return "#ff9800";
+        else if (d.type === "course") return "#f5deb3";
+        return "#2196f3";
+      })
+      .attr("stroke-width", 1)
+      .attr("x", function(d: any) {
+        const textLength = d.label.length * (d.size === "xl" || d.size === "l" ? 7 : d.size === "ml" || d.size === "m" ? 6 : 5);
+        return -textLength / 2 - 4;
+      })
+      .attr("y", -8)
+      .attr("width", function(d: any) {
+        const textLength = d.label.length * (d.size === "xl" || d.size === "l" ? 7 : d.size === "ml" || d.size === "m" ? 6 : 5);
+        return textLength + 8;
+      })
+      .attr("height", 16);
 
     // Add labels to nodes
     node.append("text")
       .text((d: any) => d.label)
       .attr("text-anchor", "middle")
       .attr("dy", 4)
-      .attr("font-size", "10px")
-      .attr("fill", "#333");
+      .attr("font-size", (d: any) => {
+        if (d.size === "xl") return "12px";
+        else if (d.size === "l") return "11px";
+        else if (d.size === "ml" || d.size === "m") return "10px";
+        else if (d.size === "ms") return "9px";
+        else if (d.size === "s") return "8px";
+        else if (d.size === "xs") return "7px";
+        return "10px";
+      })
+      .attr("fill", "#000")
+      .attr("font-weight", "500");
 
     // Define drag functions
     function dragstarted(event: any, d: any) {
@@ -144,25 +214,20 @@ export default function KnowledgeGraph({
         .attr("y1", (d: any) => (d.source as any).y)
         .attr("x2", (d: any) => (d.target as any).x)
         .attr("y2", (d: any) => (d.target as any).y);
-        
+
       node
         .attr("transform", (d: any) => `translate(${d.x},${d.y})`);
     });
-    
+
     // Cleanup on unmount
     return () => {
       simulation.stop();
     };
-  }, [data, width, height]);
+  }, [data, dimensions.width, dimensions.height]);
 
   return (
-    <div className="w-full flex justify-center">
-      <svg
-        ref={svgRef}
-        width={width}
-        height={height}
-        className="border border-gray-200 rounded-lg"
-      />
+    <div ref={containerRef} style={{ width: '100%' }}>
+      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
     </div>
   );
 }

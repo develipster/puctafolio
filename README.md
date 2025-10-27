@@ -16,6 +16,7 @@ PUC-tafolio is a modern, interactive portfolio built with cutting-edge web techn
 
 ## 🛠 Technology Stack
 
+- **Node**: Node 24.9.0 (`nvm install 24.9`)
 - **Framework**: Next.js 15 (App Router)
 - **Frontend**: React 19, TypeScript 5.3.3
 - **Styling**: Tailwind CSS 4.0 (alpha)

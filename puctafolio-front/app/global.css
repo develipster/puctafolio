@@ -33,6 +33,14 @@ html {
   min-width: 360px;
 }
 
+body {
+  font-family: var(--font-sans);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
 .prose .anchor {
   @apply absolute invisible no-underline;
 
