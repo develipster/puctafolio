@@ -1,7 +1,7 @@
 'use client'
 
-import * as d3 from "d3"
-import { useEffect, useRef, useState } from "react"
+import * as d3 from "d3";
+import { useEffect, useRef, useState } from "react";
 
 interface Node {
   id: number;
@@ -81,23 +81,73 @@ export default function KnowledgeGraph({
 
     svg.call(zoom as any);
 
-      // Initialize force simulation
+    // Custom collision force for rectangles and circles
+    function collisionForce() {
+      const nodes = simulation.nodes();
+
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const nodeA: any = nodes[i];
+          const nodeB: any = nodes[j];
+
+          const dx = nodeB.x! - nodeA.x!;
+          const dy = nodeB.y! - nodeA.y!;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          // Calculate collision radii including text boxes
+          const radiusA = getNodeRadius(nodeA);
+          const radiusB = getNodeRadius(nodeB);
+          const textBoxA = getTextBoxDimensions(nodeA);
+          const textBoxB = getTextBoxDimensions(nodeB);
+
+          // Check for collision with stronger vertical separation
+          const minDistanceX = Math.max(radiusA, textBoxA.width / 2) + Math.max(radiusB, textBoxB.width / 2);
+          const minDistanceY = Math.max(radiusA, textBoxA.height) + Math.max(radiusB, textBoxB.height);
+
+          if (distance < minDistanceX || Math.abs(dy) < minDistanceY) {
+            const overlap = minDistanceY - Math.abs(dy);
+            if (overlap > 0) {
+              const pushX = (dx / distance) * overlap * 0.002; // Weak horizontal push
+              const pushY = (dy / distance) * overlap * 0.005; // Strong vertical push
+
+              nodeA.x! -= pushX;
+              nodeA.y! -= pushY;
+              nodeB.x! += pushX;
+              nodeB.y! += pushY;
+            }
+          }
+        }
+      }
+    }
+
+    function getNodeRadius(d: any) {
+      if (d.size === "xl") return 45;
+      else if (d.size === "l") return 35;
+      else if (d.size === "ml") return 30;
+      else if (d.size === "m") return 25;
+      else if (d.size === "ms") return 22;
+      else if (d.size === "s") return 18;
+      else if (d.size === "xs") return 14;
+      return 15;
+    }
+
+    function getTextBoxDimensions(d: any) {
+      const charWidth = d.size === "xl" || d.size === "l" ? 7 : d.size === "ml" || d.size === "m" ? 6 : 5;
+      return {
+        width: d.label.length * charWidth + 8,
+        height: 16
+      };
+    }
+
+    // Initialize force simulation
     const simulation = d3.forceSimulation(nodes as d3.SimulationNodeDatum[])
       .force("link", d3.forceLink(links).id((d: any) => d.id).distance(100))
       .force("charge", d3.forceManyBody().strength(-300))
       .force("center", d3.forceCenter(dimensions.width / 2, dimensions.height / 2))
-      .force("collision", d3.forceCollide().radius((d: any) => {
-        if (d.size === "xl") return 45;
-        else if (d.size === "l") return 35;
-        else if (d.size === "ml") return 30;
-        else if (d.size === "m") return 25;
-        else if (d.size === "ms") return 22;
-        else if (d.size === "s") return 18;
-        else if (d.size === "xs") return 14;
-        return 15;
-      }))
+      .force("collision", d3.forceCollide().radius((d: any) => getNodeRadius(d)))
       .force("x", d3.forceX(dimensions.width / 2).strength(0.02))
-      .force("y", d3.forceY(dimensions.height / 2).strength(0.02));
+      .force("y", d3.forceY(dimensions.height / 2).strength(0.05)) // Stronger vertical centering
+      .force("customCollision", collisionForce);
 
     // Draw links
     const link = container.append("g")
@@ -119,18 +169,9 @@ export default function KnowledgeGraph({
 
     // Add circles to nodes
     node.append("circle")
-      .attr("r", (d: any) => {
-        if (d.size === "xl") return 45;
-        else if (d.size === "l") return 35;
-        else if (d.size === "ml") return 30;
-        else if (d.size === "m") return 25;
-        else if (d.size === "ms") return 22;
-        else if (d.size === "s") return 18;
-        else if (d.size === "xs") return 14;
-        return 15; // Default radius
-      })
+      .attr("r", (d: any) => getNodeRadius(d))
       .attr("fill", (d: any) => {
-        if (d.type === "central") return "#ff5722"; // Orange for central node
+        if (d.type === "central") return "#ff5722"; // Red for central node
         else if (d.type === "macro") return "#ff9800"; // Orange for macro topics
         else if (d.type === "course") return "#f5deb3"; // Beige for courses
         return "#2196f3"; // Default blue
@@ -143,7 +184,7 @@ export default function KnowledgeGraph({
       .attr("rx", 4) // Rounded corners
       .attr("ry", 4)
       .attr("fill", (d: any) => {
-        if (d.type === "central") return "#ff8a65"; // Lighter orange for central
+        if (d.type === "central") return "#ff8a65"; // Lighter red for central
         else if (d.type === "macro") return "#ffb74d"; // Lighter orange for macro
         else if (d.type === "course") return "#faebd7"; // Lighter beige for courses
         return "#64b5f6"; // Default lighter blue
