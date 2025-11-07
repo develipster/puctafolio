@@ -1,0 +1,85 @@
+---
+title: "Jung.AI: Building a Jungian Psychology LLM with RAG"
+publishedAt: "2025-11-07"
+summary: "Deep dive into developing an AI system that embodies Carl Jung's psychological theories using Retrieval Augmented Generation and vector databases."
+---
+
+## Project Overview
+
+Jung.AI represents the culmination of my Advanced Topics in AI course (IIC3692), combining deep learning, natural language processing, and psychological theory to create an AI system capable of providing Jungian psychological insights.
+
+## The Vision
+
+The goal is to create an AI therapeutic companion that doesn't just mimic conversational patterns, but truly understands and applies Jungian psychology principles including:
+
+- **Archetypal analysis** - Identifying which Jungian archetypes are active in a person's life
+- **Individuation guidance** - Supporting the journey toward psychological wholeness
+- **Dream interpretation** - Analyzing symbols and patterns in dreams
+- **Shadow work** - Helping users confront and integrate repressed aspects
+
+## Technical Architecture
+
+### RAG Implementation
+
+The system uses Retrieval Augmented Generation to ground responses in Jung's actual writings:
+
+1. **Vector Database**: Stores embeddings of Jung's complete works
+2. **Retrieval System**: Finds relevant passages based on user queries
+3. **LLM Integration**: Claude or GPT-4 generates responses informed by retrieved context
+
+### Data Pipeline
+
+```python
+# Simplified architecture
+1. Preprocess Jung's texts (OCR, cleaning, chunking)
+2. Generate embeddings using sentence-transformers
+3. Store in Pinecone/Weaviate vector database
+4. Query pipeline: User input → Embedding → Similarity search → Context retrieval
+5. Augmented prompt: System instructions + Retrieved context + User query
+6. LLM generates Jungian-informed response
+```
+
+## Key Challenges
+
+### 1. Therapeutic Framework
+
+Implementing Jung's four-stage therapeutic process:
+
+- **Confession**: Safe space for disclosure
+- **Elucidation**: Understanding patterns and symbols
+- **Education**: Learning new frameworks
+- **Transformation**: Integration and growth
+
+### 2. Personality Type Analysis
+
+Mapping Jung's psychological types (thinking/feeling, sensing/intuition, intro/extraversion) to user interactions.
+
+### 3. Ethical Considerations
+
+- Clear disclaimers that this is educational, not clinical therapy
+- Privacy and data security for sensitive personal information
+- Preventing over-reliance on AI for mental health
+
+## Current Progress
+
+- ✅ Vector database setup with Jung's core texts
+- ✅ Basic RAG pipeline functional
+- 🚧 Archetypal detection algorithm
+- 🚧 Dream analysis module
+- 📅 Planned: Gamification layer (symbolic journey metaphors)
+
+## Future Enhancements
+
+The ambitious vision includes a gamified experience where users embark on symbolic journeys (like tending a tree representing their connection to environment), making psychological work engaging and accessible.
+
+## Technical Stack
+
+- **Backend**: Python, FastAPI, LangChain
+- **Vector DB**: Pinecone
+- **LLM**: Anthropic Claude (for nuanced psychological understanding)
+- **Frontend**: Next.js, React
+- **Deployment**: Vercel (frontend), AWS (backend)
+
+---
+
+This project demonstrates the intersection of AI, psychology, and user experience design - a perfect showcase of applied machine learning in a meaningful context.

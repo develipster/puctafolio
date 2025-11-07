@@ -62,7 +62,7 @@ export const knowledgeData = {
     {"id": 64, "label": "Recommender Systems (IIC3633)", "size": "m", "type": "course"},
     {"id": 65, "label": "Process Mining (IIC3757)", "size": "m", "type": "course"},
     {"id": 66, "label": "Data Science for Health (IIC3800)", "size": "m", "type": "course"},
-    {"id": 67, "label": "Advanced Topics in AI (IIC3692)", "size": "m", "type": "course"},
+    {"id": 67, "label": "Advanced Topics in AI (IIC3692)", "size": "m", "type": "course", "slug": "advanced-topics-ai"},
 
     // Software Engineering and Development Courses
     {"id": 70, "label": "Software Engineering (IIC2143)", "size": "ms", "type": "course"},

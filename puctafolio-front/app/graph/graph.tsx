@@ -224,6 +224,33 @@ export default function KnowledgeGraph({
       .attr("fill", "#000")
       .attr("font-weight", "500");
 
+    // Add click handlers for course nodes
+    node.on('click', (event: any, d: any) => {
+      if (d.type === 'course' && d.slug) {
+        window.location.href = `/courses/${d.slug}`;
+      }
+    });
+
+    // Add hover effects for course nodes
+    node.on('mouseover', function(event: any, d: any) {
+      if (d.type === 'course') {
+        d3.select(this).select('circle')
+          .transition()
+          .duration(200)
+          .attr('stroke-width', 3);
+        d3.select(this).style('cursor', 'pointer');
+      }
+    })
+    .on('mouseout', function(event: any, d: any) {
+      if (d.type === 'course') {
+        d3.select(this).select('circle')
+          .transition()
+          .duration(200)
+          .attr('stroke-width', 1.5);
+        d3.select(this).style('cursor', 'default');
+      }
+    });
+
     // Define drag functions
     function dragstarted(event: any, d: any) {
       if (!event.active) simulation.alphaTarget(0.3).restart();
