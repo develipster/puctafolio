@@ -1,532 +1,879 @@
-# Updated Instructions for Claude Code: Advanced Topics AI Course Enhancement
-
-## Current Implementation Status ✅
-
-Great progress! The core structure is in place. Here's what we have:
-
-### Existing Files:
-- ✅ `/app/courses/[slug]/page.tsx` - Dynamic course route (working)
-- ✅ `/app/courses/advancedTopicsAI/jung_ai.tsx` - Course data export
-- ✅ `/app/courses/advancedTopicsAI/advancedTopicsContext.MD` - Documentation
-
-## Next Steps: Refinements & Enhancements
-
-### 1. Refactor Course Data Architecture
-
-**Current Issue**: Course data is hardcoded in `page.tsx`. Let's make it more maintainable.
-
-**File to Modify**: `app/courses/advancedTopicsAI/jung_ai.tsx`
-
-Replace current content with:
-
-```typescript
-import { CourseData } from '../types';
-
-export const advancedTopicsAI: CourseData = {
-  id: 'advanced-topics-ai',
-  title: 'Advanced Topics in AI',
-  code: 'IIC3692',
-  description: 'This course explores advanced concepts and techniques in artificial intelligence, including deep learning, reinforcement learning, and natural language processing. Students engage in hands-on projects applying AI methods to real-world problems.',
-  mainProject: {
-    name: 'Jung.AI',
-    description: 'A Deep Learning LLM that embodies Carl Jung\'s psychological teachings using Retrieval Augmented Generation (RAG) with a vector database. This therapeutic AI companion provides Jungian psychological insights through archetypal analysis, dream interpretation, and individuation guidance.',
-    technologies: [
-      'Python',
-      'LangChain',
-      'Pinecone (Vector DB)',
-      'Anthropic Claude API',
-      'FastAPI',
-      'Next.js 15',
-      'TypeScript',
-      'Tailwind CSS'
-    ],
-    keyFeatures: [
-      'RAG implementation grounded in Jung\'s complete works',
-      'Jungian personality type analysis (8 psychological types)',
-      'Archetypal interpretation engine (Shadow, Anima/Animus, Self)',
-      'Dream analysis with symbol interpretation',
-      'Four-stage therapeutic framework (Confession → Elucidation → Education → Transformation)',
-      'Individuation journey guidance',
-      'Gamification layer with symbolic metaphors (tree tending, symbolic journeys)',
-      'Privacy-first architecture with ethical AI safeguards'
-    ],
-    blogPost: '/blog/advanced-topics-ai-jung-project',
-    githubRepo: 'https://github.com/develipster/jung-ai', // Add when ready
-    liveDemo: 'https://jung-ai.vercel.app' // Add when deployed
-  },
-  learningObjectives: [
-    'Implement production-grade RAG systems with vector databases',
-    'Design and fine-tune LLMs for specialized domain knowledge',
-    'Apply NLP techniques to psychological and philosophical texts',
-    'Build scalable AI applications with FastAPI and Next.js',
-    'Navigate ethical considerations in AI-assisted mental health',
-    'Integrate gamification principles with therapeutic frameworks',
-    'Optimize embedding strategies for semantic search'
-  ],
-  prerequisites: [
-    'Artificial Intelligence (IIC2613)',
-    'Data Mining (IIC2433)'
-  ],
-  semester: 'Fall 2024',
-  status: 'in-progress' // or 'completed'
-};
-```
-
-**New File**: `app/courses/types.ts`
-
-```typescript
-export interface CourseData {
-  id: string;
-  title: string;
-  code: string;
-  description: string;
-  mainProject?: {
-    name: string;
-    description: string;
-    technologies: string[];
-    keyFeatures: string[];
-    blogPost?: string;
-    githubRepo?: string;
-    liveDemo?: string;
-  };
-  learningObjectives: string[];
-  prerequisites?: string[];
-  semester?: string;
-  status?: 'planning' | 'in-progress' | 'completed';
-}
-```
-
-### 2. Update Course Page to Import from Data File
-
-**File to Modify**: `app/courses/[slug]/page.tsx`
-
-At the top, replace the hardcoded `coursesData` with:
-
-```typescript
-import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { advancedTopicsAI } from '../advancedTopicsAI/jung_ai';
-import { CourseData } from '../types';
-
-// Course database - import all courses here
-const coursesData: Record<string, CourseData> = {
-  'advanced-topics-ai': advancedTopicsAI,
-  // Future courses will be added here:
-  // 'recommender-systems': recommenderSystems,
-  // 'web-applications': webApplications,
-};
-```
-
-### 3. Enhance Course Page UI
-
-**File to Modify**: `app/courses/[slug]/page.tsx`
-
-Add these sections after the Prerequisites section:
-
-```typescript
-{/* Project Links Section */}
-{course.mainProject && (course.mainProject.githubRepo || course.mainProject.liveDemo) && (
-  <section className="mb-12">
-    <h2 className="text-2xl font-semibold mb-4">Project Resources</h2>
-    <div className="flex flex-wrap gap-4">
-      {course.mainProject.githubRepo && (
-        <Link
-          href={course.mainProject.githubRepo}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-black rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-          View on GitHub
-        </Link>
-      )}
-      {course.mainProject.liveDemo && (
-        <Link
-          href={course.mainProject.liveDemo}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-          Live Demo
-        </Link>
-      )}
-    </div>
-  </section>
-)}
-
-{/* Course Metadata */}
-<section className="mb-12 p-4 bg-neutral-100 dark:bg-neutral-900 rounded-lg">
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {course.semester && (
-      <div>
-        <span className="text-sm font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-400">
-          Semester
-        </span>
-        <p className="text-neutral-800 dark:text-neutral-200 mt-1">
-          {course.semester}
-        </p>
-      </div>
-    )}
-    {course.status && (
-      <div>
-        <span className="text-sm font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-400">
-          Status
-        </span>
-        <p className="text-neutral-800 dark:text-neutral-200 mt-1 capitalize">
-          <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-            course.status === 'completed' ? 'bg-green-500' :
-            course.status === 'in-progress' ? 'bg-yellow-500' :
-            'bg-gray-500'
-          }`}></span>
-          {course.status.replace('-', ' ')}
-        </p>
-      </div>
-    )}
-  </div>
-</section>
-
-{/* Back to Home Button */}
-<div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800">
-  <Link
-    href="/"
-    className="inline-flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
-  >
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-    </svg>
-    Back to Knowledge Graph
-  </Link>
-</div>
-```
-
-### 4. Create the Blog Post
-
-**File to Create**: `app/blog/posts/advanced-topics-ai-jung-project.mdx`
-
-```mdx
----
-title: "Jung.AI: Building a Jungian Psychology LLM with RAG"
-publishedAt: "2025-11-07"
-summary: "Deep dive into developing an AI system that embodies Carl Jung's psychological theories using Retrieval Augmented Generation and vector databases."
----
-
-## Project Genesis
-
-Jung.AI represents the intersection of three passions: artificial intelligence, psychology, and helping people understand themselves. The project emerged from my Advanced Topics in AI course (IIC3692) as an ambitious attempt to create something meaningful beyond typical ML assignments.
-
-## The Problem Space
-
-Traditional therapy is expensive, stigmatized, and inaccessible to many. While AI cannot replace human therapists, it can serve as a complementary tool for self-exploration based on established psychological frameworks. Carl Jung's analytical psychology, with its rich symbolic language and archetypal patterns, provides an ideal foundation for this kind of AI-assisted introspection.
-
-## Why Jung?
-
-Jung's psychology is particularly well-suited for AI implementation because:
-
-1. **Structured Framework**: Clear concepts (archetypes, psychological types, individuation process)
-2. **Universal Patterns**: Archetypal symbols that appear across cultures and time
-3. **Extensive Written Works**: Jung's collected works provide rich training data
-4. **Modern Relevance**: Growing interest in personality frameworks (MBTI has Jungian roots)
-5. **Symbolic Language**: Metaphors and symbols that can be computationally mapped
-
-## Technical Architecture
-
-### RAG Pipeline Design
-
-The core innovation is using Retrieval Augmented Generation to ground AI responses in Jung's actual writings:
-
-```
-User Query
-    ↓
-Embedding Generation (sentence-transformers)
-    ↓
-Vector Similarity Search (Pinecone)
-    ↓
-Retrieve Top-K Relevant Passages from Jung's Works
-    ↓
-Construct Augmented Prompt:
-  [System Instructions] + [Retrieved Context] + [User Query]
-    ↓
-LLM Generation (Claude/GPT-4)
-    ↓
-Jungian-Informed Response
-```
-
-### Data Preparation
-
-The biggest challenge was creating a high-quality knowledge base:
-
-1. **Text Collection**: Digitized Jung's major works (Collected Works, Red Book, Man and His Symbols)
-2. **Chunking Strategy**: Split texts into semantically coherent segments (500-1000 tokens)
-3. **Metadata Enrichment**: Tagged chunks with work title, publication year, key concepts
-4. **Embedding Generation**: Used `all-mpnet-base-v2` for semantic embeddings
-5. **Vector Storage**: Indexed in Pinecone with metadata filters
-
-### Therapeutic Framework Implementation
-
-Jung's four-stage therapeutic process guides the conversation flow:
-
-**1. Confession** (Initial Sessions)
-- Build trust and safety
-- Encourage open disclosure
-- No judgment, active listening patterns
-
-**2. Elucidation** (Pattern Recognition)
-- Analyze recurring themes
-- Identify active archetypes
-- Explore dream symbols
-- Map psychological type
-
-**3. Education** (Framework Building)
-- Teach Jungian concepts relevant to user's situation
-- Explain archetypal patterns
-- Provide context for inner conflicts
-
-**4. Transformation** (Integration)
-- Support individuation process
-- Help integrate shadow aspects
-- Guide toward psychological wholeness
-
-### Key Technical Challenges
-
-#### Challenge 1: Context Window Management
-**Problem**: Jung's works are lengthy; relevant passages scattered across multiple texts.
-
-**Solution**: Hybrid retrieval system:
-- Initial broad search (top 20 chunks)
-- Re-ranking with cross-encoder
-- Select top 5 most relevant
-- Smart truncation to fit context window
-
-#### Challenge 2: Maintaining Jungian Voice
-**Problem**: Generic LLM responses don't capture Jung's unique perspective.
-
-**Solution**: 
-- System prompt with Jung's communication style
-- Few-shot examples from actual Jung writings
-- Post-processing to adjust tone
-- Retrieval emphasizes Jung's own words
-
-#### Challenge 3: Ethical Safeguards
-**Problem**: AI therapy has serious ethical implications.
-
-**Solution**:
-- Clear disclaimers: "Educational tool, not clinical therapy"
-- Crisis detection: Flags suicidal ideation, suggests professional help
-- Privacy: No data retention beyond session
-- Boundaries: Refuses to diagnose mental illness
-- Transparency: Explains AI limitations
-
-## Gamification Layer: Symbolic Journeys
-
-The most innovative aspect is translating psychological work into symbolic metaphors:
-
-### Example: The Tree Metaphor
-
-A user struggling with disconnection from their environment receives a "tree tending" journey:
-
-- **Wilted Tree**: Represents current disconnection
-- **Roots**: Exploring unconscious barriers
-- **Watering**: Actions to reconnect with community
-- **Seasons**: Natural fluctuations in psychological work
-- **Growth Rings**: Progress markers
-
-The AI as "gardener" asks reflective questions, suggests interventions, and watches the tree flourish as the user reconnects with their life.
-
-### Other Symbolic Journeys
-
-- **Cave Exploration**: Shadow work (confronting repressed aspects)
-- **Mountain Climb**: Individuation process
-- **Bridge Building**: Integrating opposites (Anima/Animus)
-- **Labyrinth**: Finding the Self at center
-
-## Current Implementation Status
-
-### Completed ✅
-- Vector database with Jung's core texts (15+ works)
-- Basic RAG pipeline with Pinecone + Claude
-- Personality type analysis (8 Jungian types)
-- Web interface (Next.js + Tailwind)
-- Conversation memory within session
-
-### In Progress 🚧
-- Archetypal detection algorithm (training classifier)
-- Dream analysis module (symbol dictionary + interpretation)
-- Gamification engine (metaphor generation)
-- Long-term user profiling (with privacy controls)
-
-### Planned 📅
-- Multi-modal input (voice, images of dreams)
-- Community features (anonymous sharing of symbolic journeys)
-- Integration with journaling apps
-- Mobile app (React Native)
-
-## Technical Stack Deep Dive
-
-### Backend
-```python
-# Core dependencies
-langchain==0.1.0          # RAG orchestration
-pinecone-client==3.0.0    # Vector database
-sentence-transformers     # Embedding generation
-anthropic==0.8.0          # Claude API
-fastapi==0.109.0          # API server
-pydantic==2.5.0           # Data validation
-```
-
-### Frontend
-```json
-{
-  "next": "15.0.0",
-  "react": "19.0.0",
-  "tailwindcss": "4.0.0-alpha.13",
-  "typescript": "5.3.3"
-}
-```
-
-### Infrastructure
-- **Hosting**: Vercel (frontend), AWS Lambda (backend)
-- **Database**: Pinecone (vectors), PostgreSQL (user sessions)
-- **Monitoring**: Sentry (errors), Vercel Analytics (usage)
-
-## Lessons Learned
-
-### 1. RAG is Powerful but Tricky
-- Quality of retrieval > Quality of generation
-- Chunking strategy massively impacts relevance
-- Hybrid search (semantic + keyword) works best
-
-### 2. Domain Expertise Matters
-- Understanding Jung deeply improved prompt engineering
-- Psychology background helped design therapeutic flow
-- Can't fake expertise with better prompts
-
-### 3. Ethical Design is Hard
-- Balancing helpfulness with safety
-- Preventing misuse without being overly restrictive
-- Transparency builds trust
-
-### 4. User Experience is Critical
-- People want quick insights, not essays
-- Visual metaphors (trees, caves) engage better
-- Progress tracking motivates continued use
-
-## Impact & Future Vision
-
-### Potential Impact
-- **Accessibility**: Free self-exploration tool for millions
-- **Education**: Learning Jungian psychology through interaction
-- **Research**: Analyzing archetypal patterns across users (anonymized)
-- **Innovation**: Advancing AI-assisted mental wellness
-
-### Future Directions
-1. **Academic Validation**: Partner with psychology dept for research
-2. **Therapeutic Integration**: Tool for actual therapists (note-taking, pattern recognition)
-3. **Expansion**: Other psychological frameworks (Freudian, CBT, etc.)
-4. **Platform**: API for developers to build on Jung.AI
-
-## Try It Yourself
-
-The project is open-source and welcomes contributors:
-
-- **GitHub**: [github.com/develipster/jung-ai](https://github.com/develipster/jung-ai)
-- **Live Demo**: [jung-ai.vercel.app](https://jung-ai.vercel.app)
-- **Documentation**: Full setup guide in repo README
-
-## Conclusion
-
-Jung.AI demonstrates that AI can go beyond simple chatbots to create meaningful tools for self-understanding. By combining RAG with psychological theory and thoughtful UX design, we can build AI systems that truly help people explore their inner worlds.
-
-The journey of building Jung.AI mirrors the individuation process itself: confronting technical challenges (shadow work), integrating multiple disciplines (unifying opposites), and creating something authentic (finding the Self).
+# Jung.AI Implementation Plan & Claude Code Instructions
+
+## Technology Stack Selection for Free Tier
+
+### LLM Model Recommendation: **Anthropic Claude (Sonnet)**
+**Reasoning:**
+- ✅ **Best for psychology**: Superior nuanced understanding vs GPT
+- ✅ **Longer context**: 200K tokens (crucial for Jung's lengthy passages)
+- ✅ **Free tier**: $5 initial credit on new accounts
+- ✅ **Ethical alignment**: Strong safety guardrails for therapeutic content
+- ✅ **API simplicity**: Clean Python/TypeScript SDKs
+
+**Alternative**: Ollama with `llama3.1:8b` (fully local, free, but requires good hardware)
+
+### Vector Database Recommendation: **Qdrant**
+**Reasoning:**
+- ✅ **Free tier**: 1GB storage (enough for Jung's complete works)
+- ✅ **No credit card required**: True free tier
+- ✅ **Performance**: Fast similarity search
+- ✅ **Hybrid search**: Supports dense + sparse vectors
+- ✅ **Python SDK**: Excellent developer experience
+- ✅ **Cloud + Local**: Can develop locally, deploy to cloud
+
+**Comparison:**
+| Feature | Qdrant | Pinecone | Weaviate | Milvus |
+|---------|--------|----------|----------|---------|
+| Free Tier | 1GB, no CC | 1 index, limited | 14-day trial | Self-hosted only |
+| Ease of Setup | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| Python SDK | Excellent | Excellent | Good | Fair |
+| Hybrid Search | ✅ | ❌ | ✅ | ✅ |
 
 ---
 
-*This project is a work in progress. If you're interested in contributing or have feedback, reach out at develipster@gmail.com*
+## Project Structure
 
-**Keywords**: Retrieval Augmented Generation, RAG, LLM, Carl Jung, Analytical Psychology, AI Ethics, Vector Databases, Pinecone, Next.js, FastAPI
+```
+jung-ai/
+├── backend/                      # FastAPI + RAG Pipeline
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py              # FastAPI app
+│   │   ├── config.py            # Environment config
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   └── schemas.py       # Pydantic models
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   ├── qdrant_service.py     # Vector DB operations
+│   │   │   ├── embedding_service.py  # Generate embeddings
+│   │   │   ├── claude_service.py     # LLM integration
+│   │   │   └── rag_service.py        # RAG orchestration
+│   │   ├── routers/
+│   │   │   ├── __init__.py
+│   │   │   ├── chat.py          # Chat endpoints
+│   │   │   └── analysis.py      # Personality/archetype analysis
+│   │   └── utils/
+│   │       ├── __init__.py
+│   │       └── prompts.py       # System prompts
+│   ├── data/
+│   │   ├── jung_texts/          # Raw Jung texts (PDF/TXT)
+│   │   └── processed/           # Chunked and cleaned
+│   ├── scripts/
+│   │   ├── ingest_texts.py      # Process and upload to Qdrant
+│   │   └── test_rag.py          # Test RAG pipeline
+│   ├── requirements.txt
+│   ├── .env.example
+│   └── README.md
+├── frontend/                     # Next.js App (in puctafolio)
+│   └── app/jung-ai/             # Will integrate later
+└── docs/
+    └── SETUP.md                 # Detailed setup guide
 ```
 
-### 5. Update Knowledge Graph
+---
 
-**File to Modify**: `app/graph/knowledge.tsx`
+## Instructions for Claude Code (Agent Mode)
 
-Update the Advanced Topics AI node to include the slug:
+```markdown
+# Claude Code Task: Jung.AI Backend Implementation
 
-```typescript
-{"id": 67, "label": "Advanced Topics in AI (IIC3692)", "size": "m", "type": "course", "slug": "advanced-topics-ai"},
+## Mission
+Build a production-ready RAG (Retrieval Augmented Generation) system for Jung.AI that:
+1. Ingests Carl Jung's texts into Qdrant vector database
+2. Provides FastAPI endpoints for chat and analysis
+3. Integrates Anthropic Claude for Jungian-informed responses
+4. Implements hybrid search (semantic + keyword)
+5. Includes ethical safeguards and conversation memory
+
+## Phase 1: Project Setup & Environment Configuration
+
+### Task 1.1: Create Project Structure
+Create the following directory structure in a new `jung-ai/` folder:
+
+```
+jung-ai/
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── config.py
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   └── schemas.py
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   ├── qdrant_service.py
+│   │   │   ├── embedding_service.py
+│   │   │   ├── claude_service.py
+│   │   │   └── rag_service.py
+│   │   ├── routers/
+│   │   │   ├── __init__.py
+│   │   │   ├── chat.py
+│   │   │   └── analysis.py
+│   │   └── utils/
+│   │       ├── __init__.py
+│   │       └── prompts.py
+│   ├── data/
+│   │   ├── jung_texts/
+│   │   └── processed/
+│   ├── scripts/
+│   │   ├── ingest_texts.py
+│   │   └── test_rag.py
+│   ├── requirements.txt
+│   ├── .env.example
+│   ├── .env
+│   └── README.md
+└── docs/
+    └── SETUP.md
 ```
 
-### 6. Testing Checklist
+### Task 1.2: Create requirements.txt
 
-After implementing these changes:
+File: `jung-ai/backend/requirements.txt`
+
+```txt
+# FastAPI & Server
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# AI & ML
+anthropic==0.8.1
+sentence-transformers==2.3.1
+torch==2.1.2
+numpy==1.26.3
+
+# Vector Database
+qdrant-client==1.7.3
+
+# Text Processing
+langchain==0.1.4
+langchain-community==0.0.16
+pypdf==4.0.1
+tiktoken==0.5.2
+
+# Utilities
+python-multipart==0.0.6
+aiofiles==23.2.1
+httpx==0.26.0
+```
+
+### Task 1.3: Create .env.example
+
+File: `jung-ai/backend/.env.example`
 
 ```bash
-# 1. Run dev server
-pnpm dev
+# ==============================================
+# Jung.AI Environment Configuration
+# ==============================================
 
-# 2. Test navigation
-# - Navigate to http://localhost:3000
-# - Click "Advanced Topics in AI" node in graph
-# - Should redirect to /courses/advanced-topics-ai
+# --- Anthropic Claude API ---
+# Get your API key from: https://console.anthropic.com/
+# Free tier: $5 credit on signup
+ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# 3. Verify course page renders
-# - All sections present
-# - Technologies display correctly
-# - Blog post link works
-# - GitHub/Demo links work (when added)
-# - Dark mode toggles properly
-# - Mobile responsive
+# --- Qdrant Vector Database ---
+# Option 1: Qdrant Cloud (Recommended)
+# Get free tier at: https://cloud.qdrant.io/
+QDRANT_URL=https://xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.aws.cloud.qdrant.io
+QDRANT_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# 4. Test blog post
-# - Navigate to /blog
-# - Find "Jung.AI" post
-# - Verify syntax highlighting works
-# - Check code blocks format correctly
+# Option 2: Local Qdrant (for development)
+# Use this if running Qdrant locally via Docker
+# QDRANT_URL=http://localhost:6333
+# QDRANT_API_KEY=  # Leave empty for local
 
-# 5. Type checking
-pnpm build
-# Should compile with no TypeScript errors
+# --- Qdrant Collection Settings ---
+QDRANT_COLLECTION_NAME=jung_complete_works
+EMBEDDING_DIMENSION=768  # all-MiniLM-L6-v2 dimension
+
+# --- Embedding Model ---
+# Model for generating text embeddings
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# --- Claude Model Configuration ---
+CLAUDE_MODEL=claude-sonnet-4-20250514
+CLAUDE_MAX_TOKENS=4096
+CLAUDE_TEMPERATURE=0.7
+
+# --- RAG Configuration ---
+# Number of text chunks to retrieve for context
+RAG_TOP_K=5
+# Minimum similarity score for retrieved chunks (0.0 - 1.0)
+RAG_SIMILARITY_THRESHOLD=0.7
+# Maximum chunk size for text splitting (tokens)
+CHUNK_SIZE=800
+# Overlap between chunks (tokens)
+CHUNK_OVERLAP=100
+
+# --- FastAPI Server ---
+API_HOST=0.0.0.0
+API_PORT=8000
+API_RELOAD=true  # Set to false in production
+
+# --- Security ---
+# Generate with: openssl rand -hex 32
+JWT_SECRET_KEY=your-secret-key-here-generate-with-openssl
+JWT_ALGORITHM=HS256
+JWT_EXPIRATION_MINUTES=60
+
+# --- CORS Origins ---
+# Comma-separated list of allowed origins
+CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+
+# --- Logging ---
+LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+# --- Rate Limiting ---
+RATE_LIMIT_PER_MINUTE=20
+MAX_CONVERSATION_LENGTH=50  # Max messages in conversation history
+
+# --- Feature Flags ---
+ENABLE_DREAM_ANALYSIS=false
+ENABLE_ARCHETYPE_DETECTION=false
+ENABLE_GAMIFICATION=false
 ```
 
-## Future Scalability
+### Task 1.4: Create .env (with dummy values)
 
-This structure makes it easy to add more courses:
+File: `jung-ai/backend/.env`
 
-```typescript
-// app/courses/recommenderSystems/recommender_systems.tsx
-export const recommenderSystems: CourseData = {
-  id: 'recommender-systems',
-  title: 'Recommender Systems',
-  code: 'IIC3633',
-  // ... course data
-};
+```bash
+# Jung.AI Environment Configuration (Development)
+# IMPORTANT: Replace dummy values with real credentials
 
-// Then import in page.tsx
-import { recommenderSystems } from '../recommenderSystems/recommender_systems';
-
-const coursesData: Record<string, CourseData> = {
-  'advanced-topics-ai': advancedTopicsAI,
-  'recommender-systems': recommenderSystems,
-  // More courses...
-};
+ANTHROPIC_API_KEY=sk-ant-api03-DUMMY-REPLACE-ME
+QDRANT_URL=http://localhost:6333
+QDRANT_API_KEY=
+QDRANT_COLLECTION_NAME=jung_complete_works
+EMBEDDING_DIMENSION=768
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+CLAUDE_MODEL=claude-sonnet-4-20250514
+CLAUDE_MAX_TOKENS=4096
+CLAUDE_TEMPERATURE=0.7
+RAG_TOP_K=5
+RAG_SIMILARITY_THRESHOLD=0.7
+CHUNK_SIZE=800
+CHUNK_OVERLAP=100
+API_HOST=0.0.0.0
+API_PORT=8000
+API_RELOAD=true
+JWT_SECRET_KEY=dummy-secret-key-replace-in-production
+JWT_ALGORITHM=HS256
+JWT_EXPIRATION_MINUTES=60
+CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+LOG_LEVEL=INFO
+RATE_LIMIT_PER_MINUTE=20
+MAX_CONVERSATION_LENGTH=50
+ENABLE_DREAM_ANALYSIS=false
+ENABLE_ARCHETYPE_DETECTION=false
+ENABLE_GAMIFICATION=false
 ```
 
-## Documentation Updates
+### Task 1.5: Create Configuration Module
 
-Update `/app/courses/advancedTopicsAI/advancedTopicsContext.MD` to reflect completed status and any learnings from implementation.
+File: `jung-ai/backend/app/config.py`
+
+```python
+"""
+Application configuration management using Pydantic Settings.
+Loads environment variables from .env file.
+"""
+
+from pydantic_settings import BaseSettings
+from functools import lru_cache
+from typing import List
+
+
+class Settings(BaseSettings):
+    """Application settings loaded from environment variables."""
+    
+    # Anthropic Claude
+    anthropic_api_key: str
+    claude_model: str = "claude-sonnet-4-20250514"
+    claude_max_tokens: int = 4096
+    claude_temperature: float = 0.7
+    
+    # Qdrant Vector Database
+    qdrant_url: str
+    qdrant_api_key: str = ""
+    qdrant_collection_name: str = "jung_complete_works"
+    embedding_dimension: int = 768
+    
+    # Embedding Model
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    
+    # RAG Configuration
+    rag_top_k: int = 5
+    rag_similarity_threshold: float = 0.7
+    chunk_size: int = 800
+    chunk_overlap: int = 100
+    
+    # FastAPI Server
+    api_host: str = "0.0.0.0"
+    api_port: int = 8000
+    api_reload: bool = True
+    
+    # Security
+    jwt_secret_key: str
+    jwt_algorithm: str = "HS256"
+    jwt_expiration_minutes: int = 60
+    
+    # CORS
+    cors_origins: str = "http://localhost:3000,http://localhost:8000"
+    
+    # Logging
+    log_level: str = "INFO"
+    
+    # Rate Limiting
+    rate_limit_per_minute: int = 20
+    max_conversation_length: int = 50
+    
+    # Feature Flags
+    enable_dream_analysis: bool = False
+    enable_archetype_detection: bool = False
+    enable_gamification: bool = False
+    
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """Parse CORS origins string into list."""
+        return [origin.strip() for origin in self.cors_origins.split(",")]
+    
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        case_sensitive = False
+
+
+@lru_cache()
+def get_settings() -> Settings:
+    """
+    Get cached settings instance.
+    Uses lru_cache to avoid re-reading .env file on every call.
+    """
+    return Settings()
+
+
+# Convenience instance for imports
+settings = get_settings()
+```
 
 ---
 
-This refactored approach gives you:
-- ✅ **Maintainability**: Course data in separate files
-- ✅ **Type Safety**: Shared `CourseData` interface
-- ✅ **Scalability**: Easy to add new courses
-- ✅ **Rich UI**: Enhanced with project links, metadata, status indicators
-- ✅ **Documentation**: Comprehensive blog post for portfolio showcasing
+## Phase 2: Pydantic Models & Schemas
 
-Great work getting the foundation in place! These enhancements will make your portfolio stand out during interviews.
+### Task 2.1: Create Data Models
+
+File: `jung-ai/backend/app/models/schemas.py`
+
+```python
+"""
+Pydantic models for request/response schemas.
+"""
+
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+from enum import Enum
+
+
+class MessageRole(str, Enum):
+    """Message role in conversation."""
+    USER = "user"
+    ASSISTANT = "assistant"
+    SYSTEM = "system"
+
+
+class Message(BaseModel):
+    """Single message in a conversation."""
+    role: MessageRole
+    content: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ChatRequest(BaseModel):
+    """Request body for chat endpoint."""
+    message: str = Field(..., min_length=1, max_length=2000)
+    conversation_id: Optional[str] = None
+    conversation_history: List[Message] = Field(default_factory=list)
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": "I've been having recurring dreams about being lost in a forest.",
+                "conversation_history": []
+            }
+        }
+
+
+class RetrievedChunk(BaseModel):
+    """Text chunk retrieved from vector database."""
+    text: str
+    score: float
+    metadata: Dict[str, Any]
+
+
+class ChatResponse(BaseModel):
+    """Response from chat endpoint."""
+    response: str
+    conversation_id: str
+    retrieved_context: List[RetrievedChunk]
+    processing_time_ms: float
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "response": "The forest is a powerful archetypal symbol...",
+                "conversation_id": "conv_123abc",
+                "retrieved_context": [],
+                "processing_time_ms": 1234.56
+            }
+        }
+
+
+class PsychologicalType(str, Enum):
+    """Jung's 8 psychological types."""
+    EXTRAVERTED_THINKING = "extraverted_thinking"
+    INTROVERTED_THINKING = "introverted_thinking"
+    EXTRAVERTED_FEELING = "extraverted_feeling"
+    INTROVERTED_FEELING = "introverted_feeling"
+    EXTRAVERTED_SENSING = "extraverted_sensing"
+    INTROVERTED_SENSING = "introverted_sensing"
+    EXTRAVERTED_INTUITION = "extraverted_intuition"
+    INTROVERTED_INTUITION = "introverted_intuition"
+
+
+class Archetype(str, Enum):
+    """Major Jungian archetypes."""
+    SELF = "self"
+    SHADOW = "shadow"
+    ANIMA = "anima"
+    ANIMUS = "animus"
+    PERSONA = "persona"
+    WISE_OLD_MAN = "wise_old_man"
+    GREAT_MOTHER = "great_mother"
+    HERO = "hero"
+    TRICKSTER = "trickster"
+
+
+class PersonalityAnalysisRequest(BaseModel):
+    """Request for personality type analysis."""
+    conversation_history: List[Message]
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "conversation_history": [
+                    {"role": "user", "content": "I prefer logic over emotions"},
+                    {"role": "assistant", "content": "That suggests..."}
+                ]
+            }
+        }
+
+
+class PersonalityAnalysisResponse(BaseModel):
+    """Response with personality analysis."""
+    psychological_type: PsychologicalType
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    dominant_function: str
+    auxiliary_function: str
+    explanation: str
+
+
+class ArchetypeAnalysisResponse(BaseModel):
+    """Response with archetype analysis."""
+    active_archetypes: List[Archetype]
+    archetype_scores: Dict[str, float]
+    interpretation: str
+
+
+class HealthStatus(BaseModel):
+    """API health check response."""
+    status: str
+    qdrant_connected: bool
+    embedding_model_loaded: bool
+    claude_api_available: bool
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+```
+
+---
+
+## Phase 3: Core Services
+
+### Task 3.1: Embedding Service
+
+File: `jung-ai/backend/app/services/embedding_service.py`
+
+```python
+"""
+Service for generating text embeddings using sentence-transformers.
+"""
+
+from sentence_transformers import SentenceTransformer
+from typing import List, Union
+import logging
+from functools import lru_cache
+
+from app.config import settings
+
+logger = logging.getLogger(__name__)
+
+
+class EmbeddingService:
+    """Handles text embedding generation."""
+    
+    def __init__(self):
+        """Initialize embedding model."""
+        logger.info(f"Loading embedding model: {settings.embedding_model}")
+        self.model = SentenceTransformer(settings.embedding_model)
+        self.dimension = settings.embedding_dimension
+        logger.info(f"Embedding model loaded. Dimension: {self.dimension}")
+    
+    def encode(self, texts: Union[str, List[str]]) -> Union[List[float], List[List[float]]]:
+        """
+        Generate embeddings for text(s).
+        
+        Args:
+            texts: Single text string or list of texts
+            
+        Returns:
+            Embedding vector(s)
+        """
+        if isinstance(texts, str):
+            # Single text
+            embedding = self.model.encode(texts, convert_to_numpy=True)
+            return embedding.tolist()
+        else:
+            # Multiple texts
+            embeddings = self.model.encode(texts, convert_to_numpy=True)
+            return embeddings.tolist()
+    
+    def encode_batch(self, texts: List[str], batch_size: int = 32) -> List[List[float]]:
+        """
+        Generate embeddings for large batch of texts.
+        
+        Args:
+            texts: List of text strings
+            batch_size: Number of texts to process at once
+            
+        Returns:
+            List of embedding vectors
+        """
+        embeddings = self.model.encode(
+            texts,
+            batch_size=batch_size,
+            show_progress_bar=True,
+            convert_to_numpy=True
+        )
+        return embeddings.tolist()
+
+
+@lru_cache()
+def get_embedding_service() -> EmbeddingService:
+    """Get cached embedding service instance."""
+    return EmbeddingService()
+```
+
+### Task 3.2: Qdrant Service
+
+File: `jung-ai/backend/app/services/qdrant_service.py`
+
+```python
+"""
+Service for interacting with Qdrant vector database.
+"""
+
+from qdrant_client import QdrantClient
+from qdrant_client.models import (
+    Distance,
+    VectorParams,
+    PointStruct,
+    Filter,
+    FieldCondition,
+    MatchValue,
+    SearchRequest
+)
+from typing import List, Dict, Any, Optional
+import logging
+import uuid
+
+from app.config import settings
+from app.models.schemas import RetrievedChunk
+
+logger = logging.getLogger(__name__)
+
+
+class QdrantService:
+    """Handles all Qdrant vector database operations."""
+    
+    def __init__(self):
+        """Initialize Qdrant client and connect to cluster."""
+        logger.info(f"Connecting to Qdrant at: {settings.qdrant_url}")
+        
+        if settings.qdrant_api_key:
+            # Cloud instance with API key
+            self.client = QdrantClient(
+                url=settings.qdrant_url,
+                api_key=settings.qdrant_api_key
+            )
+        else:
+            # Local instance without API key
+            self.client = QdrantClient(url=settings.qdrant_url)
+        
+        self.collection_name = settings.qdrant_collection_name
+        logger.info("Successfully connected to Qdrant")
+    
+    def create_collection_if_not_exists(self):
+        """Create collection if it doesn't exist."""
+        try:
+            collections = self.client.get_collections().collections
+            collection_names = [col.name for col in collections]
+            
+            if self.collection_name not in collection_names:
+                logger.info(f"Creating collection: {self.collection_name}")
+                self.client.create_collection(
+                    collection_name=self.collection_name,
+                    vectors_config=VectorParams(
+                        size=settings.embedding_dimension,
+                        distance=Distance.COSINE
+                    )
+                )
+                logger.info("Collection created successfully")
+            else:
+                logger.info(f"Collection '{self.collection_name}' already exists")
+        except Exception as e:
+            logger.error(f"Error creating collection: {e}")
+            raise
+    
+    def upsert_points(
+        self,
+        texts: List[str],
+        embeddings: List[List[float]],
+        metadata_list: List[Dict[str, Any]]
+    ) -> List[str]:
+        """
+        Insert or update points in Qdrant.
+        
+        Args:
+            texts: List of text chunks
+            embeddings: List of embedding vectors
+            metadata_list: List of metadata dicts for each chunk
+            
+        Returns:
+            List of point IDs
+        """
+        points = []
+        point_ids = []
+        
+        for text, embedding, metadata in zip(texts, embeddings, metadata_list):
+            point_id = str(uuid.uuid4())
+            point_ids.append(point_id)
+            
+            payload = {
+                "text": text,
+                **metadata
+            }
+            
+            points.append(
+                PointStruct(
+                    id=point_id,
+                    vector=embedding,
+                    payload=payload
+                )
+            )
+        
+        self.client.upsert(
+            collection_name=self.collection_name,
+            points=points
+        )
+        
+        logger.info(f"Upserted {len(points)} points to Qdrant")
+        return point_ids
+    
+    def search(
+        self,
+        query_embedding: List[float],
+        top_k: int = None,
+        score_threshold: float = None,
+        filter_dict: Optional[Dict[str, Any]] = None
+    ) -> List[RetrievedChunk]:
+        """
+        Search for similar vectors in Qdrant.
+        
+        Args:
+            query_embedding: Query vector
+            top_k: Number of results to return
+            score_threshold: Minimum similarity score
+            filter_dict: Optional metadata filters
+            
+        Returns:
+            List of retrieved chunks with scores
+        """
+        top_k = top_k or settings.rag_top_k
+        score_threshold = score_threshold or settings.rag_similarity_threshold
+        
+        # Build filter if provided
+        query_filter = None
+        if filter_dict:
+            conditions = [
+                FieldCondition(
+                    key=key,
+                    match=MatchValue(value=value)
+                )
+                for key, value in filter_dict.items()
+            ]
+            query_filter = Filter(must=conditions)
+        
+        # Execute search
+        results = self.client.search(
+            collection_name=self.collection_name,
+            query_vector=query_embedding,
+            limit=top_k,
+            score_threshold=score_threshold,
+            query_filter=query_filter
+        )
+        
+        # Format results
+        chunks = []
+        for result in results:
+            chunk = RetrievedChunk(
+                text=result.payload.get("text", ""),
+                score=result.score,
+                metadata={
+                    k: v for k, v in result.payload.items()
+                    if k != "text"
+                }
+            )
+            chunks.append(chunk)
+        
+        logger.info(f"Retrieved {len(chunks)} chunks from Qdrant")
+        return chunks
+    
+    def get_collection_info(self) -> Dict[str, Any]:
+        """Get information about the collection."""
+        try:
+            info = self.client.get_collection(self.collection_name)
+            return {
+                "name": self.collection_name,
+                "vectors_count": info.vectors_count,
+                "points_count": info.points_count,
+                "status": info.status
+            }
+        except Exception as e:
+            logger.error(f"Error getting collection info: {e}")
+            return {"error": str(e)}
+    
+    def health_check(self) -> bool:
+        """Check if Qdrant is accessible."""
+        try:
+            self.client.get_collections()
+            return True
+        except Exception as e:
+            logger.error(f"Qdrant health check failed: {e}")
+            return False
+
+
+def get_qdrant_service() -> QdrantService:
+    """Get Qdrant service instance."""
+    return QdrantService()
+```
+
+### Task 3.3: Claude Service
+
+File: `jung-ai/backend/app/services/claude_service.py`
+
+```python
+"""
+Service for interacting with Anthropic Claude API.
+"""
+
+from anthropic import Anthropic
+from typing import List, Dict, Any
+import logging
+
+from app.config import settings
+from app.models.schemas import Message
+
+logger = logging.getLogger(__name__)
+
+
+class ClaudeService:
+    """Handles all Claude API interactions."""
+    
+    def __init__(self):
+        """Initialize Anthropic client."""
+        logger.info("Initializing Claude service")
+        self.client = Anthropic(api_key=settings.anthropic_api_key)
+        self.model = settings.claude_model
+        self.max_tokens = settings.claude_max_tokens
+        self.temperature = settings.claude_temperature
+    
+    def generate_response(
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: str = None,
+        temperature: float = None,
+        max_tokens: int = None
+    ) -> str:
+        """
+        Generate a response from Claude.
+        
+        Args:
+            messages: List of message dicts with 'role' and 'content'
+            system_prompt: Optional system prompt
+            temperature: Optional temperature override
+            max_tokens: Optional max_tokens override
+            
+        Returns:
+            Claude's response text
+        """
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=max_tokens or self.max_tokens,
+                temperature=temperature or self.temperature,
+                system=system_prompt,
+                messages=messages
+            )
+            
+            return response.content[0].text
+        
+        except Exception as e:
+            logger.error(f"Error generating Claude response: {e}")
+            raise
+    
+    def health_check(self) -> bool:
+        """Check if Claude API is accessible."""
+        try:
+            # Simple test request
+            self.client.messages.create(
+                model=self.model,
+                max_tokens=10,
+                messages=[{"role": "user", "content": "Hi"}]
+            )
+            return True
+        except Exception as e:
+            logger.error(f"Claude health check failed: {e}")
+            return False
+
+
+def get_claude_service() -> ClaudeService:
+    """Get Claude service instance."""
+    return ClaudeService()
+```
+
+### Continue to Part 2 of instructions...
+
+---
+
+**STOPPING POINT FOR PART 1**
+
+Would you like me to continue with:
+- Part 2: RAG Service, System Prompts, and API Endpoints?
+- Part 3: Text Ingestion Scripts and Testing?
+- Part 4: Frontend Integration?
+
+Let me know and I'll provide the next section of Claude Code instructions!
